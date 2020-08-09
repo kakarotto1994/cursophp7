@@ -2,8 +2,6 @@
 
 require_once("config.php");
 
-$sql = new Sql();
-
-$usuarios = $sql->select("select * from easy_usuarios;");
-
-echo json_encode($usuarios);
+$user = new Usuario();
+$user->getById(13);
+echo $user;
