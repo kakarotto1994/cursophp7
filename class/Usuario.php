@@ -121,6 +121,21 @@ class Usuario {
     
         }
 
+        // deletar novos usuarios
+        public function delete(){
+
+            $sql = new Sql();
+            
+            $sql->query("delete from easy_usuarios where id = :ID;", array (
+                ":ID"=>$this->getId()
+            ));
+
+            $this->setId(0);
+            $this->setLogin("");
+            $this->setSenha("");
+            $this->setDataCriacao(new DateTime());  
+        }
+
     //
     public function __construct($login="", $pass=""){
         $this->setLogin($login);
