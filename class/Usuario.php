@@ -52,6 +52,41 @@ class Usuario {
         }
     }
 
+    //lista todos na tabela usuarios
+    public static function getList(){
+        $sql = new Sql();
+        return $sql->select("select * from easy_usuarios order by login;");
+    }
+
+    //busca pelo lotin
+    public static function getByLogin($l){
+        $sql = new Sql();
+        return $sql->select("select * from easy_usuarios where login rlike :login;", array(
+            ":login"=> $l
+        ));
+    }
+
+    //Autentica usuario
+    public function login($l, $p){
+        $sql = new Sql();
+        $result = $sql->select("select * from easy_usuarios where login = :login and senha = :pass", array(
+            ":login" =>$l,
+            ":pass"=>$p
+        ));
+        if(count($result) > 0) {
+            $row = $result[0];
+            
+            $this->setId($row["id"]);
+            $this->setLogin($row["login"]);
+            $this->setSenha($row["senha"]);
+            $this->setDataCriacao(new DateTime($row["data_criacao"]));
+        }
+        else {
+            throw new Exception("usuario ou senha não encontrados");
+        }
+    }
+    
+    // convert para string 
     public function __toString(){
         return json_encode(array(
             "id"=>$this->getId(),
