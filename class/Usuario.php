@@ -44,11 +44,7 @@ class Usuario {
             ":ID" =>$id
         ));
         if(count($result) > 0) {
-            $row = $result[0];
-            $this->setId($row["id"]);
-            $this->setLogin($row["login"]);
-            $this->setSenha($row["senha"]);
-            $this->setDataCriacao(new DateTime($row["data_criacao"]));
+            $this->setData($result[0]);
         }
     }
 
@@ -74,16 +70,61 @@ class Usuario {
             ":pass"=>$p
         ));
         if(count($result) > 0) {
-            $row = $result[0];
-            
-            $this->setId($row["id"]);
-            $this->setLogin($row["login"]);
-            $this->setSenha($row["senha"]);
-            $this->setDataCriacao(new DateTime($row["data_criacao"]));
+
+            $this->setData($result[0]);
         }
         else {
             throw new Exception("usuario ou senha não encontrados");
         }
+    }
+
+    //Vincula os valores encontrados a memoria do codigo (nos sets / gets)
+    public function setData($data){
+
+        $this->setId($data["id"]);
+        $this->setLogin($data["login"]);
+        $this->setSenha($data["senha"]);
+        $this->setDataCriacao(new DateTime($data["data_criacao"]));
+
+    }
+
+    // Inserir novos usuarios
+    public function insert(){
+        $sql = new Sql();
+        $result = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASS)", array(
+            ":LOGIN"=>$this->getLogin(),
+            ":PASS"=>$this->getSenha()
+        ));
+
+        if(count($result) > 0) {
+
+            $this->setData($result[0]);
+        }
+        else {
+            throw new Exception("usuario ou senha não encontrados");
+        }
+    }
+
+        // atualizar novos usuarios
+        public function update($login, $pass){
+
+            $this->setLogin($login);
+            $this->setSenha($pass);
+
+            $sql = new Sql();
+            
+            $sql->query("Update easy_usuarios set login = :login, senha = :pass where id = :ID;", array (
+                ":login"=>$this->getLogin(),
+                ":pass"=>$this->getSenha(),
+                ":ID"=>$this->getId()
+            ));
+    
+        }
+
+    //
+    public function __construct($login="", $pass=""){
+        $this->setLogin($login);
+        $this->setSenha($pass);
     }
     
     // convert para string 
